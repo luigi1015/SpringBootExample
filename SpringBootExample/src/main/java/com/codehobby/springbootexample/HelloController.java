@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,14 +20,21 @@ public class HelloController
 		URL url;
 		StringBuilder powerballDataSB = new StringBuilder();
 		String powerballURL = "http://www.powerball.com/powerball/winnums-text.txt";
+		int numLines = 1;
 		try
 		{
 			url = new URL( powerballURL );
 			BufferedReader in = new BufferedReader( new InputStreamReader(url.openStream()) );
 			String line;
+			String delimiters = "[ ]+";
+			String[] powerballData;
+			int maxTokens = 8;
+			in.readLine();//First line, which has column headers not data
 			while ((line = in.readLine()) != null)
 			{
-				powerballDataSB.append( line );
+				numLines++;
+				powerballData = line.split(delimiters, maxTokens);
+				powerballDataSB.append( Arrays.toString(powerballData) );
 				powerballDataSB.append( "\n<br>\n");
 			}
 			in.close();
@@ -37,7 +45,7 @@ public class HelloController
 			System.err.println("I/O Error: " + e.getMessage());
 			e.printStackTrace();
 		} 
-		return powerballDataSB.toString();
+		return "Number of lines: " + numLines + "\n<br>\n" + powerballDataSB.toString();
 	}
 
 }
